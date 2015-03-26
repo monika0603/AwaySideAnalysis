@@ -39,6 +39,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       explicit AwayAnalyzer(const edm::ParameterSet&);
       ~AwayAnalyzer();
       static bool vtxSort( const reco::Vertex &  a, const reco::Vertex & b );
+      bool TrackQualityCuts(const reco::Track & track, const reco::Vertex & vertexCollectionSelected);
 
 
    private:
@@ -63,6 +64,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       int nevt_;
       int ntrack_;
       int nvertex_;
+      int tHighPurityTracks_;
 
       edm::InputTag vertexSrc_;
       edm::InputTag trackSrc_;
