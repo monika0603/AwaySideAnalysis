@@ -55,6 +55,8 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       std::map<std::string,TH3F*> trkPerf3D_;
       std::map<std::string,TH1F*> vtxPerf_;
       std::map<std::string,TH2F*> vtxPerf2D_;
+      std::map<std::string,TH1F*> hdNdEtaVzBin_;
+      std::map<std::string,TH1F*> hEventVzBin_;
 
       TH1F* events_;
       TH1F* vertices_;
@@ -74,19 +76,14 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       double ptMin_;
       double vertexZMax_;
 
-      bool applyCuts_;
       std::string qualityString_;
-      double dxyErrMax_;
-      double dzErrMax_;
-      double ptErrMax_;
 
       std::vector<double> ptBins_;
+      std::vector<double> vzBins_;
       std::vector<double> etaBins_;
       std::vector<double> NptBins_;
     
-      bool occByLeadingJetEt_;
       double jetEtaMax_;
-      bool applyJetCuts_;
       double jetEtMin_;
       double jetEtMax_;
       double cutDzErrMax_;
@@ -95,6 +92,11 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       double cutMultMin_;
       double cutMultMax_;
       double cutMinTrack_;
+    
+      char histoName1[200];
+      char histoTitle1[200];
+      char histoName2[200];
+      char histoTitle2[200];
 
 };
 
@@ -109,20 +111,15 @@ etaMin_(iConfig.getParameter<double>("etaMin")),
 etaMax_(iConfig.getParameter<double>("etaMax")),
 ptMin_(iConfig.getParameter<double>("ptMin")),
 vertexZMax_(iConfig.getParameter<double>("vertexZMax")),
-applyCuts_(iConfig.getParameter<bool>("applyCuts")),
 qualityString_(iConfig.getParameter<std::string>("qualityString")),
-dxyErrMax_(iConfig.getParameter<double>("dzErrMax")),
-dzErrMax_(iConfig.getParameter<double>("dzErrMax")),
-ptErrMax_(iConfig.getParameter<double>("ptErrMax")),
 ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
 etaBins_(iConfig.getParameter<std::vector<double> >("etaBins")),
-occByLeadingJetEt_(iConfig.getParameter<bool>("occByLeadingJetEt")),
-applyJetCuts_(iConfig.getParameter<bool>("applyJetCuts"))
 {
-  edm::Service<TFileService> fs;
-  initHistos(fs);
+    edm::Service<TFileService> fs;
+    initHistos(fs);
 
     ptBins_ = iConfig.getParameter<std::vector<double> >("ptBins");
+    vzBins_ = iConfig.getParameter<std::vector<double> >("vzBins");
     NptBins_ = iConfig.getParameter<std::vector<double> >("NptBins");
     cutMultMin_ = iConfig.getParameter<double>("cutMultMin");
     cutMultMax_ = iConfig.getParameter<double>("cutMultMax");
@@ -130,6 +127,8 @@ applyJetCuts_(iConfig.getParameter<bool>("applyJetCuts"))
     cutDzErrMax_ = iConfig.getUntrackedParameter<double>("cutDzErrMax", 3.0);
     cutDxyErrMax_ = iConfig.getUntrackedParameter<double>("cutDxyErrMax", 3.0);
     cutPtErrMax_ = iConfig.getUntrackedParameter<double>("cutPtErrMax", 0.1);
+    
+    nVzBins = vzBins_.size()-1;
 
 }
 
@@ -217,6 +216,17 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if( !TrackQualityCuts(track, vsorted[0])) continue;
         
         tHighPurityTracks_++;
+        
+        for(int kVz=0; kVz<nVzBins; kVz++) {
+            if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
+            {
+                sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
+                hdNdEtaVzBin_[histoName1]->Fill(track.eta());
+                
+                sprintf(histoName2, "nEventsVzBin_%d", kVz);
+                hEventVzBin_[histoName2]->Fill(0.5);
+            }
+        }
         
         if( track.eta() <= etaMax_ && track.eta() >= etaMin_ && track.pt() > ptMin_)
         {
@@ -332,6 +342,15 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf2D_["etaphi"] = fs->make<TH2F>("trkEtaPhi","Track Eta-Phi Map;#eta;#phi",50,-2.5,2.5,100,-3.15,3.15);
   trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
                                        100,-30,30,100,-3.0,3.0);
+  for(int kVz=0; kVz<nVzBins; kVz++) {
+        sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
+        sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
+        hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
+      
+        sprintf(histoName2, "nEventsVzBin_%d", kVz);
+        sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
+        hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);
+    }
 }
 
 bool
