@@ -360,7 +360,7 @@ AwayAnalyzer::TrackQualityCuts(const reco::Track & track, const reco::Vertex & v
     dxysigma = sqrt(track.d0Error()*track.d0Error()+vxErr*vyErr);
     dzsigma = sqrt(track.dzError()*track.dzError()+vzErr*vzErr);
     
-    if(track.quality(reco::TrackBase::qualityByName(srcTracks_)) != 1)
+    if(track.quality(reco::TrackBase::qualityByName(trackSrc)) != 1)
         return false;
     if(fabs(dxy/dxysigma) > cutDxyErrMax_) return false;
     if(fabs(dz/dzsigma) > cutDzErrMax_) return false;
