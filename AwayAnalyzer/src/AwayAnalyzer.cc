@@ -32,6 +32,7 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
+#include <TString.h>
 #include <TGraph.h>
 
 class AwayAnalyzer : public edm::EDAnalyzer {
@@ -55,7 +56,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       std::map<std::string,TH3F*> trkPerf3D_;
       std::map<std::string,TH1F*> vtxPerf_;
       std::map<std::string,TH2F*> vtxPerf2D_;
-   //   std::map<std::string,TH1F*> hdNdEtaVzBin_;
+      std::map<std::string,TH1F*> hdNdEtaVzBin_;
    //   std::map<std::string,TH1F*> hEventVzBin_;
 
       TH1F* events_;
@@ -341,17 +342,17 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
                                        100,-30,30,100,-3.0,3.0);
   
-  char histoName1[200];
-  char histoTitle1[200];
+  Tstring histoName1;
+  Tstring histoTitle1;
  // char histoName2[200];
  // char histoTitle2[200];
   for(int kVz=0; kVz<nVzBins; kVz++) {
       
-      sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
-      sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-     /* hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
+      histoName1 = "hdNdEta_VzBin_" + kVz;
+      histoTitle1 = "dNdEta distribution for " + vzBins_[kVz] + " < V_{z} < " + vzBins_[kVz+1];
+      hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
       
-      sprintf(histoName2, "nEventsVzBin_%d", kVz);
+    /*  sprintf(histoName2, "nEventsVzBin_%d", kVz);
       sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
       hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);*/
     }
