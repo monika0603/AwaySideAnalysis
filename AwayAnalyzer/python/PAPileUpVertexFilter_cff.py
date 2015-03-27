@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-import AwaySideRun2015Ana.AwayAnalyzer.PAPileUpVertexFilter_cfi
+import AwaySideAnalysis.AwayAnalyzer.PAPileUpVertexFilter_cfi
 
-pileupVertexFilterCutG = AwaySideRun2015Ana.AwayAnalyzer.PAPileUpVertexFilter_cfi.pileupVertexFilter.clone()
+pileupVertexFilterCutG = AwaySideAnalysis.AwayAnalyzer.PAPileUpVertexFilter_cfi.pileupVertexFilter.clone()
 
 pileupVertexFilterCutGloose = pileupVertexFilterCutG.clone(
     dzCutByNtrk = cms.vdouble(
