@@ -342,8 +342,8 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
                                        100,-30,30,100,-3.0,3.0);
   
-  Tstring histoName1;
-  Tstring histoTitle1;
+  TString histoName1;
+  TString histoTitle1;
  // char histoName2[200];
  // char histoTitle2[200];
   for(int kVz=0; kVz<nVzBins; kVz++) {
