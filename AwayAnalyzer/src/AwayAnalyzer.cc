@@ -214,9 +214,9 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
         tHighPurityTracks_++;
         
-        char histoName1[200];
+      /*  char histoName1[200];
         char histoName2[200];
-       /* for(int kVz=0; kVz<nVzBins; kVz++) {
+        for(int kVz=0; kVz<nVzBins; kVz++) {
             if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
             {
                 
@@ -342,7 +342,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf2D_["etaphi"] = fs->make<TH2F>("trkEtaPhi","Track Eta-Phi Map;#eta;#phi",50,-2.5,2.5,100,-3.15,3.15);
   trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
                                        100,-30,30,100,-3.0,3.0);
-  for(int kVz=0; kVz<nVzBins; kVz++) {
+ /* for(int kVz=0; kVz<nVzBins; kVz++) {
       char histoName1[200];
       char histoTitle1[200];
       char histoName2[200];
@@ -354,7 +354,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
       sprintf(histoName2, "nEventsVzBin_%d", kVz);
       sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
       hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);
-    }
+    }*/
 }
 
 bool
