@@ -32,7 +32,6 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
-#include <string.h>
 #include <TGraph.h>
 
 class AwayAnalyzer : public edm::EDAnalyzer {
@@ -342,14 +341,14 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
                                        100,-30,30,100,-3.0,3.0);
   
-  string histoName1;
-  string histoTitle1;
+  char histoName1[300];
+  char histoTitle1[1000];
  // char histoName2[200];
  // char histoTitle2[200];
   for(int kVz=0; kVz<nVzBins; kVz++) {
       
-      histoName1 = "hdNdEta_VzBin_" + kVz;
-      histoTitle1 = "dNdEta distribution for " + vzBins_[kVz] + " < V_{z} < " + vzBins_[kVz+1];
+      sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
+      sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
       hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
       
     /*  sprintf(histoName2, "nEventsVzBin_%d", kVz);
