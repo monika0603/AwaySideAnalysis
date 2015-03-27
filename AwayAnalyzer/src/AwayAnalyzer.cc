@@ -353,7 +353,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
       
       sprintf(histoName2, "nEventsVzBin_%d", kVz);
       sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-      hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);*
+      hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);*/
     }
 }
 
