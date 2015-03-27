@@ -214,18 +214,19 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
         tHighPurityTracks_++;
         
-        for(int kVz=0; kVz<nVzBins; kVz++) {
+        char histoName1[200];
+        char histoName2[200];
+       /* for(int kVz=0; kVz<nVzBins; kVz++) {
             if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
             {
-                char histoName1[200];
-                char histoName2[200];
+                
                 sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
                 hdNdEtaVzBin_[histoName1]->Fill(track.eta());
                 
                 sprintf(histoName2, "nEventsVzBin_%d", kVz);
                 hEventVzBin_[histoName2]->Fill(0.5);
             }
-        }
+        }*/
         
         if( track.eta() <= etaMax_ && track.eta() >= etaMin_ && track.pt() > ptMin_)
         {
