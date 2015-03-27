@@ -60,7 +60,7 @@ process.HeavyIonGlobalParameters = cms.PSet(
 
 process.load('RecoHI.HiCentralityAlgos.HiCentrality_cfi')
 process.load('HeavyIonsAnalysis.Configuration.collisionEventSelection_cff')
-process.load('AwaySideRun2015Ana.AwayAnalyzer.PAPileUpVertexFilter_cff')
+process.load('AwaySideAnalysis.AwayAnalyzer.PAPileUpVertexFilter_cff')
 process.load('RecoHI.HiCentralityAlgos.HiCentrality_cfi')
 process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltSingleTrigger = process.hltHighLevel.clone()
