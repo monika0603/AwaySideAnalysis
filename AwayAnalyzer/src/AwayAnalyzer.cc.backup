@@ -39,7 +39,6 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       explicit AwayAnalyzer(const edm::ParameterSet&);
       ~AwayAnalyzer();
       static bool vtxSort( const reco::Vertex &  a, const reco::Vertex & b );
-      bool TrackQualityCuts(const reco::Track & track, const reco::Vertex & vertexCollectionSelected);
 
 
    private:
@@ -55,8 +54,6 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       std::map<std::string,TH3F*> trkPerf3D_;
       std::map<std::string,TH1F*> vtxPerf_;
       std::map<std::string,TH2F*> vtxPerf2D_;
-      std::map<std::string,TH1F*> hdNdEtaVzBin_;
-      std::map<std::string,TH1F*> hEventVzBin_;
 
       TH1F* events_;
       TH1F* vertices_;
@@ -66,8 +63,6 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       int nevt_;
       int ntrack_;
       int nvertex_;
-      int tHighPurityTracks_;
-      int nVzBins;
 
       edm::InputTag vertexSrc_;
       edm::InputTag trackSrc_;
@@ -77,14 +72,19 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       double ptMin_;
       double vertexZMax_;
 
+      bool applyCuts_;
       std::string qualityString_;
+      double dxyErrMax_;
+      double dzErrMax_;
+      double ptErrMax_;
 
       std::vector<double> ptBins_;
-      std::vector<double> vzBins_;
       std::vector<double> etaBins_;
       std::vector<double> NptBins_;
     
+      bool occByLeadingJetEt_;
       double jetEtaMax_;
+      bool applyJetCuts_;
       double jetEtMin_;
       double jetEtMax_;
       double cutDzErrMax_;
@@ -107,15 +107,20 @@ etaMin_(iConfig.getParameter<double>("etaMin")),
 etaMax_(iConfig.getParameter<double>("etaMax")),
 ptMin_(iConfig.getParameter<double>("ptMin")),
 vertexZMax_(iConfig.getParameter<double>("vertexZMax")),
+applyCuts_(iConfig.getParameter<bool>("applyCuts")),
 qualityString_(iConfig.getParameter<std::string>("qualityString")),
+dxyErrMax_(iConfig.getParameter<double>("dzErrMax")),
+dzErrMax_(iConfig.getParameter<double>("dzErrMax")),
+ptErrMax_(iConfig.getParameter<double>("ptErrMax")),
 ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
-etaBins_(iConfig.getParameter<std::vector<double> >("etaBins"))
+etaBins_(iConfig.getParameter<std::vector<double> >("etaBins")),
+occByLeadingJetEt_(iConfig.getParameter<bool>("occByLeadingJetEt")),
+applyJetCuts_(iConfig.getParameter<bool>("applyJetCuts"))
 {
-    edm::Service<TFileService> fs;
-    initHistos(fs);
+  edm::Service<TFileService> fs;
+  initHistos(fs);
 
     ptBins_ = iConfig.getParameter<std::vector<double> >("ptBins");
-    vzBins_ = iConfig.getParameter<std::vector<double> >("vzBins");
     NptBins_ = iConfig.getParameter<std::vector<double> >("NptBins");
     cutMultMin_ = iConfig.getParameter<double>("cutMultMin");
     cutMultMax_ = iConfig.getParameter<double>("cutMultMax");
@@ -123,9 +128,6 @@ etaBins_(iConfig.getParameter<std::vector<double> >("etaBins"))
     cutDzErrMax_ = iConfig.getUntrackedParameter<double>("cutDzErrMax", 3.0);
     cutDxyErrMax_ = iConfig.getUntrackedParameter<double>("cutDxyErrMax", 3.0);
     cutPtErrMax_ = iConfig.getUntrackedParameter<double>("cutPtErrMax", 0.1);
-    
-    nVzBins = vzBins_.size()-1;
-    cout<<"Finished initializing the parameters"<<endl;
 
 }
 
@@ -139,10 +141,8 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   tHighPurityTracks_ = 0;
-    
-   Handle<reco::TrackCollection> tracks;
-   iEvent.getByLabel(trackSrc_, tracks);
+   Handle<reco::TrackCollection> tcol;
+   iEvent.getByLabel(trackSrc_, tcol);
 
    Handle<std::vector<reco::Vertex> > vertex;
    iEvent.getByLabel(vertexSrc_, vertex);
@@ -156,10 +156,32 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // skip events failing vertex cut                                                                                           
    if( fabs(vsorted[0].z()) > vertexZMax_ ) return;
 
+   // obtain jets, if we are considering them                                                                                  
+   Handle<std::vector<pat::Jet> > jets;
+   std::vector<const pat::Jet *> sortedJets;
+   if( occByLeadingJetEt_ || applyJetCuts_)
+     {
+       iEvent.getByLabel(jetSrc_, jets);
+       // take only accepted jets and sort them by Et                                                                           
+       for(unsigned it=0; it<jets->size(); ++it)
+	 {
+	   const pat::Jet* jet = &((*jets)[it]);
+	   if(fabs(jet->eta())>=jetEtaMax_) continue;
+	   sortedJets.push_back(jet);
+	 }
+       sortByPtRef(&sortedJets);
+     }
+
+   if(applyJetCuts_) {
+     if(sortedJets.size() > 0){
+       if(sortedJets[0]->pt() > jetEtMax_ || sortedJets[0]->pt() < jetEtMin_) return; }
+
+     if(sortedJets.size() == 0 && jetEtMin_ > 0 ) return; }
+
    nevt_++;
    events_->Fill(0.5);
    evtPerf_["Nvtx"]->Fill(vsorted.size());
-   evtPerf_["Ntrk"]->Fill(tracks->size());
+   evtPerf_["Ntrk"]->Fill(tcol->size());
 
    int lumi = iEvent.getLuminosityBlock().luminosityBlock();
    evtPerf_["Lumi"]->Fill(lumi);
@@ -201,62 +223,57 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        vxErr=vsorted.begin()->xError();
        vyErr=vsorted.begin()->yError();
      }
-    
-    for( const auto & track : *tracks ) //de-referencing the pointer "tracks" to track and auto will automatically know the type of tracks. This is a new way of looping over the tracks. It is guaranteed to run over all the tracks.
-    {
-        double dxy=0.0, dz=0.0, dxysigma=0.0, dzsigma=0.0;
-        dxy = track.dxy(vtxPoint);
-        dz = track.dz(vtxPoint);
-        dxysigma = sqrt(track.d0Error()*track.d0Error()+vxErr*vyErr);
-        dzsigma = sqrt(track.dzError()*track.dzError()+vzErr*vzErr);
-        
-        if( !TrackQualityCuts(track, vsorted[0])) continue;
-        
-        tHighPurityTracks_++;
-        
-      /*  char histoName1[200];
-        char histoName2[200];
-        for(int kVz=0; kVz<nVzBins; kVz++) {
-            if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
-            {
-                
-                sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
-                hdNdEtaVzBin_[histoName1]->Fill(track.eta());
-                
-                sprintf(histoName2, "nEventsVzBin_%d", kVz);
-                hEventVzBin_[histoName2]->Fill(0.5);
-            }
-        }*/
-        
-        if( track.eta() <= etaMax_ && track.eta() >= etaMin_ && track.pt() > ptMin_)
-        {
-            trackseta_->Fill(0.5);
-            trkPerf_["Nhit"]->Fill(track.numberOfValidHits());
-            trkPerf_["pt"]->Fill(track.pt());
-            trkPerf_["eta"]->Fill( track.eta() );
-            trkPerf2D_["etaphi"]->Fill( track.eta(), track.phi() );
-            trkPerf_["ptHigh"]->Fill(track.pt());
-            trkPerf_["phi"]->Fill(track.phi());
-            trkPerf_["dxyErr"]->Fill(dxy/dxysigma);
-            trkPerf_["dzErr"]->Fill(dz/dzsigma);
-            trkPerf_["chi2"]->Fill(track.normalizedChi2());
-            trkPerf_["pterr"]->Fill(track.ptError() / track.pt() );
-            trkPerf2D_["etavz"]->Fill( vtxPoint.z(), track.eta() );
-            trkPerf3D_["Nhit3D"]->Fill(track.eta(), track.pt(), track.numberOfValidHits());
-            trkPerf3D_["phi3D"]->Fill(track.eta(), track.pt(), track.phi());
-            trkPerf3D_["dxyErr3D"]->Fill(track.eta(), track.pt(), dxy/dxysigma);
-            trkPerf3D_["dzErr3D"]->Fill(track.eta(), track.pt(), dz/dzsigma);
-            trkPerf3D_["chi23D"]->Fill(track.eta(), track.pt(), track.normalizedChi2());
-            trkPerf3D_["pterr3D"]->Fill(track.eta(), track.pt(), track.ptError() / track.pt() );
-            ntrack_++;
-        }
-        
-    }
-    
-   // tAllTracks_->Fill(nHITracks);
-    
-    if( !(tHighPurityTracks_ >= cutMultMin_ && tHighPurityTracks_ < cutMultMax_)) return;
-   // tHPTracks_->Fill(tHighPurityTracks_);
+
+   int multiplicity =0;
+   int nTrkSel = 0;
+   for( const auto & track : * tcol )
+     {
+
+       tracks_->Fill(0.5);
+
+       double dxy=0.0, dz=0.0, dxysigma=0.0, dzsigma=0.0;
+       dxy = track.dxy(vtxPoint);
+       dz = track.dz(vtxPoint);
+       dxysigma = sqrt(track.d0Error()*track.d0Error()+vxErr*vyErr);
+       dzsigma = sqrt(track.dzError()*track.dzError()+vzErr*vzErr);
+
+       if ( applyCuts_)
+	 {
+	   if(track.quality(reco::TrackBase::qualityByName(qualityString_)) != 1)
+	     continue;
+	   if(fabs(dxy/dxysigma) > dxyErrMax_) continue;
+	   if(fabs(dz/dzsigma) > dzErrMax_) continue;
+	   if(track.ptError() / track.pt() > ptErrMax_) continue;
+	 }
+       multiplicity++;
+
+       if( track.eta() <= etaMax_ && track.eta() >= etaMin_ && track.pt() > ptMin_)
+	 {
+	   nTrkSel++;
+	   trackseta_->Fill(0.5);
+	   trkPerf_["Nhit"]->Fill(track.numberOfValidHits());
+	   trkPerf_["pt"]->Fill(track.pt());
+	   trkPerf_["eta"]->Fill( track.eta() );
+	   trkPerf2D_["etaphi"]->Fill( track.eta(), track.phi() );
+	   trkPerf_["ptHigh"]->Fill(track.pt());
+	   trkPerf_["phi"]->Fill(track.phi());
+	   trkPerf_["dxyErr"]->Fill(dxy/dxysigma);
+	   trkPerf_["dzErr"]->Fill(dz/dzsigma);
+	   trkPerf_["chi2"]->Fill(track.normalizedChi2());
+	   trkPerf_["pterr"]->Fill(track.ptError() / track.pt() );
+	   trkPerf2D_["etavz"]->Fill( vtxPoint.z(), track.eta() );
+	   trkPerf3D_["Nhit3D"]->Fill(track.eta(), track.pt(), track.numberOfValidHits());
+	   trkPerf3D_["phi3D"]->Fill(track.eta(), track.pt(), track.phi());
+	   trkPerf3D_["dxyErr3D"]->Fill(track.eta(), track.pt(), dxy/dxysigma);
+	   trkPerf3D_["dzErr3D"]->Fill(track.eta(), track.pt(), dz/dzsigma);
+	   trkPerf3D_["chi23D"]->Fill(track.eta(), track.pt(), track.normalizedChi2());
+	   trkPerf3D_["pterr3D"]->Fill(track.eta(), track.pt(), track.ptError() / track.pt() );
+	   ntrack_++;
+	 }
+     }
+
+   evtPerf_["NtrkSel"]->Fill(nTrkSel);
+   evtPerf_["multiplicity"]->Fill(multiplicity);
 
 }
 
@@ -306,12 +323,17 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
 					 ptBins_.size()-1, &ptBins_[0],
 					 dumBins.size()-1, &dumBins[0]);
   evtPerf_["Ntrk"] = fs->make<TH1F>("evtNtrk","Tracks per event",100,0,400);
+  evtPerf_["NtrkSel"] = fs->make<TH1F>("evtNtrkSel","Selected Tracks per event",100,0,500);
   evtPerf_["Nvtx"] = fs->make<TH1F>("evtNvtx","Primary Vertices per event",10,0,10);
   evtPerf_["ncoll"] = fs->make<TH1F>("ncoll","Event Ncoll from Generator",50,0,50);
   evtPerf_["b"] = fs->make<TH1F>("b","Impact Parameter from Generator",100,0,20);
 
   evtPerf_["NvtxLumi"] = fs->make<TH1F>("evtNvtxLumi","Primary Vertices by Lumi",200,0,2000);
   evtPerf_["Lumi"] = fs->make<TH1F>("evtLumi","Events by Lumi",200,0,2000);
+
+  evtPerf_["multiplicity"] = fs->make<TH1F>("multiplicity","Event Multiplicity (selected tracks)",500,0,500);
+  evtPerf_["multDS"] = fs->make<TH1F>("multDS","DS Event Multiplicity (selected tracks)",500,0,500);
+  evtPerf_["multNonDS"] = fs->make<TH1F>("multNonDS","Non-DS Event Multiplicity (selected tracks)",500,0,500);
 
   vtxPerf_["Ntrk"] = fs->make<TH1F>("vtxNtrk","Tracks per vertex",50,0,200);
   vtxPerf_["x"] = fs->make<TH1F>("vtxX","Vertex x position",1000,-1,1);
@@ -342,19 +364,6 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf2D_["etaphi"] = fs->make<TH2F>("trkEtaPhi","Track Eta-Phi Map;#eta;#phi",50,-2.5,2.5,100,-3.15,3.15);
   trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
                                        100,-30,30,100,-3.0,3.0);
- /* for(int kVz=0; kVz<nVzBins; kVz++) {
-      char histoName1[200];
-      char histoTitle1[200];
-      char histoName2[200];
-      char histoTitle2[200];
-      sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
-      sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-      hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
-      
-      sprintf(histoName2, "nEventsVzBin_%d", kVz);
-      sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-      hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);
-    }*/
 }
 
 bool
@@ -365,35 +374,6 @@ AwayAnalyzer::vtxSort( const reco::Vertex &  a, const reco::Vertex & b )
   else
     return  a.chi2() < b.chi2() ? true : false ;
 }
-
-bool
-AwayAnalyzer::TrackQualityCuts(const reco::Track & track, const reco::Vertex & vertexCollectionSelected)
-{
-    
-    math::XYZPoint vtxPoint(0.0,0.0,0.0);
-    double vzErr =0.0, vxErr=0.0, vyErr=0.0;
-    vtxPoint=vertexCollectionSelected.position();
-    vzErr=vertexCollectionSelected.zError();
-    vxErr=vertexCollectionSelected.xError();
-    vyErr=vertexCollectionSelected.yError();
-    
-    double dxy=0.0, dz=0.0, dxysigma=0.0, dzsigma=0.0;
-    dxy = track.dxy(vtxPoint);
-    dz = track.dz(vtxPoint);
-    dxysigma = sqrt(track.d0Error()*track.d0Error()+vxErr*vyErr);
-    dzsigma = sqrt(track.dzError()*track.dzError()+vzErr*vzErr);
-    
-    if(track.quality(reco::TrackBase::qualityByName(qualityString_)) != 1)
-        return false;
-    if(fabs(dxy/dxysigma) > cutDxyErrMax_) return false;
-    if(fabs(dz/dzsigma) > cutDzErrMax_) return false;
-    if(track.ptError() / track.pt() > cutPtErrMax_) return false;
-    
-    return true;
-    
-}
-
-
 
 // ------------ method called once each job just before starting event loop  ------------
 void
