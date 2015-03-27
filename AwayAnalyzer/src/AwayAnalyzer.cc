@@ -340,12 +340,13 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf2D_["etaphi"] = fs->make<TH2F>("trkEtaPhi","Track Eta-Phi Map;#eta;#phi",50,-2.5,2.5,100,-3.15,3.15);
   trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
                                        100,-30,30,100,-3.0,3.0);
-    
+  
+  char histoName1[200];
+  char histoTitle1[200];
+  char histoName2[200];
+  char histoTitle2[200];
   for(int kVz=0; kVz<nVzBins; kVz++) {
-      char histoName1[200];
-      char histoTitle1[200];
-      char histoName2[200];
-      char histoTitle2[200];
+      
       sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
       sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
       hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
