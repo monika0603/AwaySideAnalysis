@@ -67,6 +67,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       int ntrack_;
       int nvertex_;
       int tHighPurityTracks_;
+      int nVzBins;
 
       edm::InputTag vertexSrc_;
       edm::InputTag trackSrc_;
