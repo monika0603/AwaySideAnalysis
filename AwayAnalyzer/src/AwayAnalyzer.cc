@@ -56,7 +56,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       std::map<std::string,TH1F*> vtxPerf_;
       std::map<std::string,TH2F*> vtxPerf2D_;
       std::map<std::string,TH1F*> hdNdEtaVzBin_;
-   //   std::map<std::string,TH1F*> hEventVzBin_;
+      std::map<std::string,TH1F*> hEventVzBin_;
 
       TH1F* events_;
       TH1F* vertices_;
