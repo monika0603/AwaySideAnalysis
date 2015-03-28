@@ -213,6 +213,8 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
         char histoName1[200];
         char histoName2[200];
+        std::cout<<vzBins_.size()<<std::endl;
+        std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
         for(int kVz=0; kVz<nVzBins; kVz++) {
             if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
             {
