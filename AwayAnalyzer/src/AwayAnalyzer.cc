@@ -344,8 +344,8 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   char histoTitle1[1000];
   char histoName2[200];
   char histoTitle2[200];
-  nVzBins = vzBins_.size()-1;
-  std::cout<<vzBins_.size()<<std::endl;
+  nVzBins = ptBins.size()-1;
+  std::cout<<ptBins.size()<<std::endl;
   std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
     
   for(int kVz=0; kVz<nVzBins; kVz++) {
