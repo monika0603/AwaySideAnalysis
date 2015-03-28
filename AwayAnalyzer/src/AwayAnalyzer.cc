@@ -124,6 +124,7 @@ etaBins_(iConfig.getParameter<std::vector<double> >("etaBins"))
     cutDxyErrMax_ = iConfig.getUntrackedParameter<double>("cutDxyErrMax", 3.0);
     cutPtErrMax_ = iConfig.getUntrackedParameter<double>("cutPtErrMax", 0.1);
     
+    std::cout<<vzBins_.size()<<std::endl;
     nVzBins = vzBins_.size()-1;
 }
 
