@@ -124,7 +124,10 @@ etaBins_(iConfig.getParameter<std::vector<double> >("etaBins"))
     cutDxyErrMax_ = iConfig.getUntrackedParameter<double>("cutDxyErrMax", 3.0);
     cutPtErrMax_ = iConfig.getUntrackedParameter<double>("cutPtErrMax", 0.1);
     
-    nVzBins = vzBins_.size()-1;
+  //  nVzBins = vzBins_.size()-1;
+    nVzBins = ptBins_.size()-1;
+    std::cout<<ptBins_.size()<<std::endl;
+    std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
 }
 
 
@@ -345,8 +348,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
 //  char histoTitle1[1000];
   char histoName2[200];
 //  char histoTitle2[200];
-    std::cout<<vzBins_.size()<<std::endl;
-    std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
+    
   for(int kVz=0; kVz<nVzBins; kVz++) {
       
       sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
