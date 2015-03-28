@@ -124,7 +124,6 @@ etaBins_(iConfig.getParameter<std::vector<double> >("etaBins"))
     cutDxyErrMax_ = iConfig.getUntrackedParameter<double>("cutDxyErrMax", 3.0);
     cutPtErrMax_ = iConfig.getUntrackedParameter<double>("cutPtErrMax", 0.1);
     
-  //  nVzBins = vzBins_.size()-1;
 }
 
 
@@ -342,22 +341,22 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
                                        100,-30,30,100,-3.0,3.0);
   
   char histoName1[300];
-//  char histoTitle1[1000];
+  char histoTitle1[1000];
   char histoName2[200];
-//  char histoTitle2[200];
-    nVzBins = ptBins_.size()-1;
-    std::cout<<ptBins_.size()<<std::endl;
-    std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
+  char histoTitle2[200];
+  nVzBins = vzBins_.size()-1;
+  std::cout<<vzBins_.size()<<std::endl;
+  std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
     
   for(int kVz=0; kVz<nVzBins; kVz++) {
       
       sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
-   //   sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-   //   hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, "dNdEta distribution", 100, etaMin_, etaMax_);
+      sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
+      hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, "dNdEta distribution", 100, etaMin_, etaMax_);
       
       sprintf(histoName2, "nEventsVzBin_%d", kVz);
-   //   sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-   //   hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, "No. of events", 1, 0, 1);
+      sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
+      hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, "No. of events", 1, 0, 1);
     }
 }
 
