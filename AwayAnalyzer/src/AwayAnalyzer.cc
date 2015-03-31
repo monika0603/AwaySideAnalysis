@@ -207,12 +207,10 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
         char histoName1[200];
         char histoName2[200];
-        std::cout<<vzBins_.size()<<" (analyze)"<<std::endl;
-        std::cout<<"The number of Vz bins (analyze)= "<<nVzBins<<std::endl;
+        
         for(int kVz=0; kVz<nVzBins; kVz++) {
             if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
             {
-                
                 sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
                 hdNdEtaVzBin_[histoName1]->Fill(track.eta());
                 
@@ -340,9 +338,6 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   char histoTitle1[1000];
   char histoName2[200];
   char histoTitle2[200];
-  
-  std::cout<<vzBins_.size()<<std::endl;
-  std::cout<<"The number of Vz bins = "<<vzBins_.size()-1<<std::endl;
     
   for(int kVz=0; kVz<int(vzBins_.size()-1); kVz++) {
       
