@@ -106,13 +106,13 @@ etaMax_(iConfig.getParameter<double>("etaMax")),
 ptMin_(iConfig.getParameter<double>("ptMin")),
 vertexZMax_(iConfig.getParameter<double>("vertexZMax")),
 qualityString_(iConfig.getParameter<std::string>("qualityString")),
-//ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
+ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
 etaBins_(iConfig.getParameter<std::vector<double> >("etaBins"))
 {
     edm::Service<TFileService> fs;
     initHistos(fs);
 
-    ptBins_ = iConfig.getParameter<std::vector<double> >("ptBins");
+   // ptBins_ = iConfig.getParameter<std::vector<double> >("ptBins");
     vzBins_ = iConfig.getParameter<std::vector<double> >("vzBins");
     NptBins_ = iConfig.getParameter<std::vector<double> >("NptBins");
     cutMultMin_ = iConfig.getParameter<double>("cutMultMin");
