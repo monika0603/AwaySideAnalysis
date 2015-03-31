@@ -109,6 +109,8 @@ vzBins_(iConfig.getParameter<std::vector<double> >("vzBins"))
     edm::Service<TFileService> fs;
     initHistos(fs);
     
+    nVzBins = vzBins_.size()-1;
+    
     NptBins_ = iConfig.getParameter<std::vector<double> >("NptBins");
     cutMultMin_ = iConfig.getParameter<double>("cutMultMin");
     cutMultMax_ = iConfig.getParameter<double>("cutMultMax");
