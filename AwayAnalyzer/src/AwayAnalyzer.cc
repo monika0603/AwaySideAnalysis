@@ -79,13 +79,10 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       std::string qualityString_;
 
       std::vector<double> ptBins_;
-      std::vector<double> vzBins_;
       std::vector<double> etaBins_;
+      std::vector<double> vzBins_;
       std::vector<double> NptBins_;
     
-      double jetEtaMax_;
-      double jetEtMin_;
-      double jetEtMax_;
       double cutDzErrMax_;
       double cutDxyErrMax_;
       double cutPtErrMax_;
