@@ -108,8 +108,6 @@ vzBins_(iConfig.getParameter<std::vector<double> >("vzBins"))
 {
     edm::Service<TFileService> fs;
     initHistos(fs);
-
-    nVzBins = vzBins_.size()-1;
     
     NptBins_ = iConfig.getParameter<std::vector<double> >("NptBins");
     cutMultMin_ = iConfig.getParameter<double>("cutMultMin");
@@ -342,9 +340,9 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   char histoTitle2[200];
   
   std::cout<<vzBins_.size()<<std::endl;
-  std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
+  std::cout<<"The number of Vz bins = "<<vzBins_.size()-1<<std::endl;
     
-  for(int kVz=0; kVz<nVzBins; kVz++) {
+  for(int kVz=0; kVz<vzBins_.size()-1; kVz++) {
       
       sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
       sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
