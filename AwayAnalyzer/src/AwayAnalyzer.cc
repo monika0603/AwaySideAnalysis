@@ -342,7 +342,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   std::cout<<vzBins_.size()<<std::endl;
   std::cout<<"The number of Vz bins = "<<vzBins_.size()-1<<std::endl;
     
-  for(int kVz=0; kVz<vzBins_.size()-1; kVz++) {
+  for(int kVz=0; kVz<int(vzBins_.size()-1); kVz++) {
       
       sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
       sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
