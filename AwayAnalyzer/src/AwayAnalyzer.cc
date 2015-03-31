@@ -91,7 +91,6 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       double cutPtErrMax_;
       double cutMultMin_;
       double cutMultMax_;
-      double cutMinTrack_;
 
 };
 
@@ -114,11 +113,9 @@ vzBins_(iConfig.getParameter<std::vector<double> >("vzBins"))
     initHistos(fs);
 
    // ptBins_ = iConfig.getParameter<std::vector<double> >("ptBins");
-    
     NptBins_ = iConfig.getParameter<std::vector<double> >("NptBins");
     cutMultMin_ = iConfig.getParameter<double>("cutMultMin");
     cutMultMax_ = iConfig.getParameter<double>("cutMultMax");
-    cutMinTrack_ = iConfig.getParameter<double>("cutMinTrack");
     cutDzErrMax_ = iConfig.getUntrackedParameter<double>("cutDzErrMax", 3.0);
     cutDxyErrMax_ = iConfig.getUntrackedParameter<double>("cutDxyErrMax", 3.0);
     cutPtErrMax_ = iConfig.getUntrackedParameter<double>("cutPtErrMax", 0.1);
