@@ -71,7 +71,6 @@ class AwayAnalyzer : public edm::EDAnalyzer {
 
       edm::InputTag vertexSrc_;
       edm::InputTag trackSrc_;
-      edm::InputTag jetSrc_;
       double etaMin_;
       double etaMax_;
       double ptMin_;
@@ -102,13 +101,12 @@ ntrack_(0),
 nvertex_(0),
 vertexSrc_(iConfig.getParameter<edm::InputTag>("vertexSrc")),
 trackSrc_(iConfig.getParameter<edm::InputTag>("trackSrc")),
-jetSrc_(iConfig.getParameter<edm::InputTag>("jetSrc")),
 etaMin_(iConfig.getParameter<double>("etaMin")),
 etaMax_(iConfig.getParameter<double>("etaMax")),
 ptMin_(iConfig.getParameter<double>("ptMin")),
 vertexZMax_(iConfig.getParameter<double>("vertexZMax")),
 qualityString_(iConfig.getParameter<std::string>("qualityString")),
-ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
+//ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
 etaBins_(iConfig.getParameter<std::vector<double> >("etaBins"))
 {
     edm::Service<TFileService> fs;
