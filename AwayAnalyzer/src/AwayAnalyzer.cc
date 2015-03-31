@@ -108,7 +108,7 @@ vertexZMax_(iConfig.getParameter<double>("vertexZMax")),
 qualityString_(iConfig.getParameter<std::string>("qualityString")),
 ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
 etaBins_(iConfig.getParameter<std::vector<double> >("etaBins")),
-vzBins_ = (iConfig.getParameter<std::vector<double> >("vzBins"))
+vzBins_(iConfig.getParameter<std::vector<double> >("vzBins"))
 {
     edm::Service<TFileService> fs;
     initHistos(fs);
