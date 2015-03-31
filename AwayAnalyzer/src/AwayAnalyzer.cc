@@ -109,7 +109,8 @@ vzBins_(iConfig.getParameter<std::vector<double> >("vzBins"))
     edm::Service<TFileService> fs;
     initHistos(fs);
 
-   // ptBins_ = iConfig.getParameter<std::vector<double> >("ptBins");
+    nVzBins = vzBins_.size()-1;
+    
     NptBins_ = iConfig.getParameter<std::vector<double> >("NptBins");
     cutMultMin_ = iConfig.getParameter<double>("cutMultMin");
     cutMultMax_ = iConfig.getParameter<double>("cutMultMax");
@@ -206,8 +207,8 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
         char histoName1[200];
         char histoName2[200];
-        std::cout<<vzBins_.size()<<std::endl;
-        std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
+        std::cout<<vzBins_.size()<<" (analyze)"<<std::endl;
+        std::cout<<"The number of Vz bins (analyze)= "<<nVzBins<<std::endl;
         for(int kVz=0; kVz<nVzBins; kVz++) {
             if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
             {
@@ -339,7 +340,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   char histoTitle1[1000];
   char histoName2[200];
   char histoTitle2[200];
-  nVzBins = vzBins_.size()-1;
+  
   std::cout<<vzBins_.size()<<std::endl;
   std::cout<<"The number of Vz bins = "<<nVzBins<<std::endl;
     
@@ -347,11 +348,11 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
       
       sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
       sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-      hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, "dNdEta distribution", 100, etaMin_, etaMax_);
+      hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
       
       sprintf(histoName2, "nEventsVzBin_%d", kVz);
       sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-      hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, "No. of events", 1, 0, 1);
+      hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);
     }
 }
 
