@@ -38,7 +38,7 @@ process.AwaySideAnalysis = cms.EDAnalyzer('AwayAnalyzer',
                               )
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("pPb_ntuple.root")
+                                   fileName = cms.string("pPbEfficiency_DeltaZ4cm.root")
                                    )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
