@@ -27,8 +27,8 @@ process.AwaySideAnalysis = cms.EDAnalyzer('AwayAnalyzer',
                               qualityString = cms.string("highPurity"),
                               ptBins = cms.vdouble(-15.0, -13.0, -11.0, -9.0, -7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 9.0, 11.0, 13.0, 15.0),
                               etaBins = cms.vdouble(-2.4, 0.0, 2.4),
-                                          #       vzBins = cms.vdouble(-15.0, -13.0, -11.0, -9.0, -7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 9.0, 11.0, 13.0, 15.0),
-                              vzBins = cms.vdouble(-15.0, -11.0, -7.0, -3.0, 1.0, 5.0, 9.0, 14.0),
+                              vzBins = cms.vdouble(-15.0, -13.0, -11.0, -9.0, -7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 9.0, 11.0, 13.0, 15.0),
+                                          #vzBins = cms.vdouble(-15.0, -11.0, -7.0, -3.0, 1.0, 5.0, 9.0, 14.0),
                               NptBins = cms.vdouble(1.6, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0),
                               cutMultMin = cms.double(0.0),
                               cutMultMax = cms.double(1000.0),
@@ -38,7 +38,7 @@ process.AwaySideAnalysis = cms.EDAnalyzer('AwayAnalyzer',
                               )
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("pPbEfficiency_DeltaZ4cm.root")
+                                   fileName = cms.string("pPb_Pbp_CombinedEfficiency_DeltaZ2cm.root")
                                    )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
