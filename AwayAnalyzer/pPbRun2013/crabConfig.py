@@ -24,4 +24,4 @@ config.Data.publication = False
 #config.Data.publishDataName = 'CRAB3_tutorial_Data_analysis_test5'
 
 config.section_('Site')
-config.Site.storageSite = 'T2_CH_CERN'
+config.Site.storageSite = 'T2_US_Vanderbilt'
