@@ -343,7 +343,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
       
       sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
       sprintf(histoTitle1, "dNdEta distribution for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
-      hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 100, etaMin_, etaMax_);
+      hdNdEtaVzBin_[histoName1] = fs->make<TH1F>(histoName1, histoTitle1, 51, etaMin_, etaMax_);
       
       sprintf(histoName2, "nEventsVzBin_%d", kVz);
       sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
