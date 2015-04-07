@@ -62,13 +62,85 @@ process.load("HLTrigger.HLTfilters.hltHighLevel_cfi")
 process.hltSingleTrigger = process.hltHighLevel.clone()
 process.hltSingleTrigger.HLTPaths = ["HLT_PAZeroBiasPixel_SingleTrack_v1"]
 
-process.path = cms.Path(process.hltSingleTrigger *
-                        process.PAcollisionEventSelection *
-                        process.siPixelRecHits *
-                        process.pileupVertexFilterCutGplus *
-                        process.pACentrality *
-                        process.AwaySideAnalysis
-                        )
+process.hltMult100 = process.hltHighLevel.clone()
+process.hltMult100.HLTPaths = ["HLT_PAPixelTracks_Multiplicity100_v1",
+                               "HLT_PAPixelTracks_Multiplicity100_v2"]
+
+process.hltMult130 = process.hltHighLevel.clone()
+process.hltMult130.HLTPaths = ["HLT_PAPixelTracks_Multiplicity130_v1",
+                               "HLT_PAPixelTracks_Multiplicity130_v2"]
+
+process.hltMult160 = process.hltHighLevel.clone()
+process.hltMult160.HLTPaths = ["HLT_PAPixelTracks_Multiplicity160_v1",
+                               "HLT_PAPixelTracks_Multiplicity160_v2"]
+
+process.hltMult190 = process.hltHighLevel.clone()
+process.hltMult190.HLTPaths = ["HLT_PAPixelTracks_Multiplicity190_v1",
+                               "HLT_PAPixelTracks_Multiplicity190_v2"]
+
+process.hltMult100.andOr = cms.bool(True)
+process.hltMult100.throw = cms.bool(False)
+
+process.hltMult130.andOr = cms.bool(True)
+process.hltMult130.throw = cms.bool(False)
+
+process.hltMult160.andOr = cms.bool(True)
+process.hltMult160.throw = cms.bool(False)
+
+process.hltMult190.andOr = cms.bool(True)
+process.hltMult190.throw = cms.bool(False)
+
+process.AwaySideAnalysisMult100 = process.AwaySideAnalysis.clone(
+                                                       cutMultMin = cms.double(120),
+                                                       cutMultMax = cms.double(150)
+                                                       )
+
+process.AwaySideAnalysisMult130 = process.AwaySideAnalysis.clone(
+                                                       cutMultMin = cms.double(150),
+                                                       cutMultMax = cms.double(185)
+                                                       )
+
+process.AwaySideAnalysisMult160 = process.AwaySideAnalysis.clone(
+                                                       cutMultMin = cms.double(185),
+                                                       cutMultMax = cms.double(220)
+                                                       )
+
+process.AwaySideAnalysisMult190 = process.AwaySideAnalysis.clone(
+                                                       cutMultMin = cms.double(220),
+                                                       cutMultMax = cms.double(260)
+                                                       )
+
+process.Mult100 = cms.Path(process.hltSingleTrigger *
+                           process.PAcollisionEventSelection *
+                           process.siPixelRecHits *
+                           #     process.pileupVertexFilterCutGplus *
+                           process.pACentrality *
+                           process.AwaySideAnalysisMult100
+                           )
+
+process.Mult130 = cms.Path(process.hltSingleTrigger *
+                           process.PAcollisionEventSelection *
+                           process.siPixelRecHits *
+                           #     process.pileupVertexFilterCutGplus *
+                           process.pACentrality *
+                           process.AwaySideAnalysisMult130
+                           )
+
+process.Mult160 = cms.Path(process.hltSingleTrigger *
+                           process.PAcollisionEventSelection *
+                           process.siPixelRecHits *
+                           #     process.pileupVertexFilterCutGplus *
+                           process.pACentrality *
+                           process.AwaySideAnalysisMult160
+                           )
+
+process.Mult190 = cms.Path(process.hltSingleTrigger *
+                           process.PAcollisionEventSelection *
+                           process.siPixelRecHits *
+                           #      process.pileupVertexFilterCutGplus *
+                           process.pACentrality *
+                           process.AwaySideAnalysisMult190
+                           )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
