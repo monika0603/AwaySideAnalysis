@@ -65,7 +65,7 @@ process.hltSingleTrigger.HLTPaths = ["HLT_PAZeroBiasPixel_SingleTrack_v1"]
 process.path = cms.Path(process.hltSingleTrigger *
                         process.PAcollisionEventSelection *
                         process.siPixelRecHits *
-                        # process.pileupVertexFilterCutGplus *
+                        process.pileupVertexFilterCutGplus *
                         process.pACentrality *
                         process.AwaySideAnalysis
                         )
