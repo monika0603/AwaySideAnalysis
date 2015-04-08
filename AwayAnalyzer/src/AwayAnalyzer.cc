@@ -85,6 +85,9 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       std::vector<double> etaBins_;
       std::vector<double> vzBins_;
       std::vector<double> NptBins_;
+      std::vector<std::vector<TVector3>> pVectVect_trg;
+      std::vector<std::vector<TVector3>> pVectVect_ass;
+      std::vector<double> zvtxVect;
     
       double cutDzErrMax_;
       double cutDxyErrMax_;
@@ -314,20 +317,8 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             
             if(deltaEta == 0 && deltaPhi == 0) continue;
             
-            char histogramName5[200];
-            for(int kPt=0; kPt<bins1; kPt++) {
-                if(pt_trg > NptBins_[kPt] && pt_trg <= NptBins_[kPt+1]) //correction
-                 {
-                    sprintf(histogramName5, "hSignalPtBin%d", kPt);
-                
-                    hSignal[histogramName5]->Fill(fabs(deltaEta),fabs(deltaPhi));
-                    hSignal[histogramName5]->Fill(-fabs(deltaEta),fabs(deltaPhi));
-                    hSignal[histogramName5]->Fill(fabs(deltaEta),-fabs(deltaPhi));
-                    hSignal[histogramName5]->Fill(-fabs(deltaEta),-fabs(deltaPhi));
-                    hSignal[histogramName5]->Fill(fabs(deltaEta),2*pi_-fabs(deltaPhi));
-                    hSignal[histogramName5]->Fill(-fabs(deltaEta),2*pi_-fabs(deltaPhi));
-                }
-            }
+            hSignal->Fill(deltaEta,deltaPhi,1.0/nMultTrg);
+        
         } //Loop over associated particles
     } //Loop over trigger particles
     
