@@ -9,15 +9,15 @@ config.General.transferLogs = True
 
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'awaySideAnalyzer_cfg.py'
-config.JobType.outputFiles = ['pPb_Pbp_CombinedEfficiency_DeltaZ2cm.root']
+config.JobType.psetName = 'awaySideAnalyzer_PAHighPt_cfg.py'
+config.JobType.outputFiles = ['pPb_Pbp_CombinedDiHadronCorrFunc.root']
 
 config.section_('Data')
 config.Data.inputDataset = '/PAMinBiasUPC/HIRun2013-PromptReco-v1/RECO'
 config.Data.inputDBS = 'global'
 config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 20
-config.Data.lumiMask = 'Cert_pPb_Pbpcombined_HI_PromptReco_Collisions13_SUBSET_JSON.txt'
+config.Data.lumiMask = 'Cert_pPb_Pbpcombined_HI_PromptReco_Collisions13_JSON.txt'
 config.Data.publication = False
 #config.Data.runRange = '193093-193999' # '193093-194075'
 #config.Data.outLFN = '/store/user/<subdir>' # or '/store/group/<subdir>'
