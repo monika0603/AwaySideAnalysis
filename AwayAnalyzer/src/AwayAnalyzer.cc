@@ -36,7 +36,9 @@
 #include "TVector3.h"
 #include "assert.h"
 
+using namespace std;
 using namespace edm;
+using namespace reco;
 
 class AwayAnalyzer : public edm::EDAnalyzer {
    public:
