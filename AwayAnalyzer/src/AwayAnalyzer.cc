@@ -33,6 +33,8 @@
 #include <TH2.h>
 #include <TH3.h>
 #include <TGraph.h>
+#include "TVector3.h"
+#include "assert.h"
 
 class AwayAnalyzer : public edm::EDAnalyzer {
    public:
