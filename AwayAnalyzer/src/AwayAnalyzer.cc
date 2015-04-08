@@ -36,6 +36,8 @@
 #include "TVector3.h"
 #include "assert.h"
 
+using namespace edm;
+
 class AwayAnalyzer : public edm::EDAnalyzer {
    public:
       explicit AwayAnalyzer(const edm::ParameterSet&);
@@ -143,9 +145,10 @@ AwayAnalyzer::~AwayAnalyzer()
 void
 AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
 
    tHighPurityTracks_ = 0;
+   vector<TVector3> pVect_trg;
+   vector<TVector3> pVect_ass;
     
    Handle<reco::TrackCollection> tracks;
    iEvent.getByLabel(trackSrc_, tracks);
@@ -258,7 +261,7 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         TVector3 pvector;
         pvector.SetPtEtaPhi(track.pt(),track.eta(),track.phi());
         
-        if(track.eta()<=etaMaxAsso_ && track.eta()>=etaMinAss0_
+        if(track.eta()<=etaMaxAsso_ && track.eta()>=etaMinAsso_
            && track.pt()<ptMaxAsso_ && track.pt()>ptMinAsso_)
         {
             pVect_ass.push_back(pvector);
