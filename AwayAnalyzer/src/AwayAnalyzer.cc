@@ -324,7 +324,7 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     pVectVect_trg.push_back(pVect_trg);
     pVectVect_ass.push_back(pVect_ass);
- //   zvtxVect.push_back(zVertexEventSelected);
+    zvtxVect.push_back(vsorted[0].z());
 
 }
 
@@ -384,6 +384,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
     }
     
    hSignal = fs->make<TH2D>("hSignal", ";#Delta#eta;#Delta#phi", 33,-5.0-0.15,5.0+0.15,31,-pi_/2+pi_/32,3*pi_/2-pi_/32);
+   hBackground = fs->make<TH2D>("hBackground", ";#Delta#eta;#Delta#phi", 33,-5.0-0.15,5.0+0.15,31,-pi_/2+pi_/32,3*pi_/2-pi_/32);
     
    trkPerf_["ptAsso"] = fs->make<TH1F>("trkPtAsso", "Associated Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
    trkPerf_["ptTrg"] = fs->make<TH1F>("trkPtTrg", "Trigger Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
@@ -441,6 +442,103 @@ AwayAnalyzer::beginJob()
 void
 AwayAnalyzer::endJob()
 {
+    ////////////////// Calculating background for pi0-hadron correlations //////////
+    int nevttotal_trg = (int)pVectVect_trg.size();
+    int nevttotal_ass = (int)pVectVect_ass.size();
+    
+    unsigned int nBackgroundFill = 0;
+    unsigned int countAcceptedTriggerEvents = 0;
+    bool *acceptedTriggerEvents = new bool [nevttotal_trg];
+        
+    // Look at Z-Vertex differences
+    for(int nevt_trg=0; nevt_trg<nevttotal_trg; nevt_trg++) {
+        acceptedTriggerEvents[nevt_trg] = false;
+        for(int nevt_ass=0; nevt_ass<nevttotal_ass; nevt_ass++) {
+                
+            if(nevt_trg == nevt_ass)
+                continue;  // don't use the same event
+            if(fabs((zvtxVect)[nevt_trg] - (zvtxVect)[nevt_ass])<=2.0) {
+                acceptedTriggerEvents[nevt_trg] = true;
+                countAcceptedTriggerEvents++;
+                break; // found at least one partner event with a close enough Z vertex
+            }
+        } // loop over associated events
+    } // loop over trigger events
+ 
+    for(int nevt_trg=0; nevt_trg<nevttotal_trg; nevt_trg++) {
+        
+        if(!acceptedTriggerEvents[nevt_trg])
+            continue;  // skip this trigger event which has no partner event close enough in Z
+        nBackgroundFill++;
+        
+        int countGoodAssociated = 0;
+        
+        for(int nevt_ass=0; nevt_ass<nevttotal_ass; nevt_ass++) {
+            if(nevt_trg == nevt_ass) { // check if the random trigger event matches this assocated event
+                continue;    // go to the next associated track
+            }
+            
+            if(fabs((zvtxVect)[nevt_trg] - (zvtxVect)[nevt_ass])>2.0){  // check if the Z vertex of the trigger and associated are separated by more than 2 cm
+                continue;    // go to the next associated event
+            }
+            countGoodAssociated++;
+        }
+        
+        if(countGoodAssociated < 1) {
+            cout << "\n For nevt_trg " << nevt_trg << " the number of good associated events = " << countGoodAssociated << endl;
+            continue;
+        }
+        
+        int takeRandomInterval = 1;
+        if(countGoodAssociated > 10)
+            takeRandomInterval = countGoodAssociated/10 + 1 ;
+        
+        int takeAssociated = 0;
+        for(int nevt_ass=0; nevt_ass<nevttotal_ass; nevt_ass += takeRandomInterval) {
+            
+            if(nevt_trg == nevt_ass) { // check if the random trigger event matches this assocated event
+                continue;    // go to the next associated track
+            }
+            
+            if(fabs((zvtxVect)[nevt_trg] - (zvtxVect)[nevt_ass])>2.0){  // check if the Z vertex of the trigger and associated are separated by more than 2 cm
+                continue;    // go to the next associated event
+            }
+            
+            takeAssociated++;
+            if(takeAssociated > 10)
+                break;
+            
+            vector<TVector3> pVectTmp_trg = (pVectVect_trg)[nevt_trg];
+            vector<TVector3> pVectTmp_ass = (pVectVect_ass)[nevt_ass];
+            int nMult_trg1 = pVectTmp_trg.size();
+            int nMult_ass1 = pVectTmp_ass.size();
+            
+            for(int ntrg=0; ntrg<nMult_trg1; ++ntrg)
+            {
+                TVector3 pvectorTmp_trg = pVectTmp_trg[ntrg];
+                double eta_trg = pvectorTmp_trg.Eta();
+                double phi_trg = pvectorTmp_trg.Phi();
+                
+                for(int nass=0; nass<nMult_ass1; ++nass)
+                {
+                    
+                    TVector3 pvectorTmp_ass = pVectTmp_ass[nass];
+                    double eta_ass = pvectorTmp_ass.Eta();
+                    double phi_ass = pvectorTmp_ass.Phi();
+                    
+                    double deltaEta = eta_ass - eta_trg;
+                    double deltaPhi = phi_ass - phi_trg;
+                    if(deltaPhi > pi_) deltaPhi = deltaPhi - 2*pi_;
+                    if(deltaPhi < -pi_) deltaPhi = deltaPhi + 2*pi_;
+                    if(deltaPhi > -pi_ && deltaPhi < -_pi/2.0) deltaPhi = deltaPhi + 2*pi_;
+                    
+                    hBackground->Fill(deltaEta,deltaPhi,1.0/nMult_trg1);
+                }
+            }
+        }
+    }
+    
+    delete [] acceptedTriggerEvents;
 }
 
 //define this as a plug-in
