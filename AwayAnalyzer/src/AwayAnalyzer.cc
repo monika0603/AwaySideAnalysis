@@ -262,7 +262,6 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     if( !(tHighPurityTracks_ >= cutMultMin_ && tHighPurityTracks_ < cutMultMax_)) return;
     evtPerf_["NHPtrk"]->Fill(tHighPurityTracks_);
-    cout<<"I am inside the multiplicity selection loop"<<endl;
     
     for( const auto & track : *tracks)
     {
@@ -274,7 +273,6 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(track.eta()<=etaMaxAsso_ && track.eta()>=etaMinAsso_
            && track.pt()<ptMaxAsso_ && track.pt()>ptMinAsso_)
         {
-            cout<<"Found an associated track"<<endl;
             pVect_ass.push_back(pvector);
             trkPerf_["ptAsso"]->Fill(track.pt());
             trkPerf_["etaAsso"]->Fill(track.eta());
@@ -288,7 +286,6 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if(track.eta()<=etaMaxTrg_ && track.eta()>=etaMinTrg_
             && track.pt()<=ptMaxTrg_ && track.pt()>=ptMinTrg_)
         {
-            cout<<"Found trigger track"<<endl;
             pVect_trg.push_back(pvector);
             trkPerf_["ptTrg"]->Fill(track.pt());
             trkPerf_["etaTrg"]->Fill(track.eta());
