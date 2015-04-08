@@ -194,8 +194,6 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        vyErr=vsorted.begin()->yError();
      }
     
-    tAllTracks_->Fill(nHITracks);
-    
     for( const auto & track : *tracks ) //de-referencing the pointer "tracks" to track and auto will automatically know the type of tracks. This is a new way of looping over the tracks. It is guaranteed to run over all the tracks.
     {
         double dxy=0.0, dz=0.0, dxysigma=0.0, dzsigma=0.0;
