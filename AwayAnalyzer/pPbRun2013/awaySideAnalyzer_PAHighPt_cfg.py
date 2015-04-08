@@ -37,10 +37,10 @@ process.AwaySideAnalysis = cms.EDAnalyzer('AwayAnalyzer',
                               etaMaxTrg = cms.double(1.2),
                               etaMinAsso = cms.double(0.0),
                               etaMaxAsso = cms.double(1.2),
-                              ptMinTrg_ = cms.double(3.0),
-                              ptMaxTrg_ = cms.double(10.0),
-                              ptMinAsso_ = cms.double(0.4),
-                              ptMaxAsso_ = cms.double(3.0)
+                              ptMinTrg = cms.double(3.0),
+                              ptMaxTrg = cms.double(10.0),
+                              ptMinAsso = cms.double(0.4),
+                              ptMaxAsso = cms.double(3.0)
                               )
 
 process.TFileService = cms.Service("TFileService",
