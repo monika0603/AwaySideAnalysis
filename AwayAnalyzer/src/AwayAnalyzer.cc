@@ -68,6 +68,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       int nvertex_;
       int tHighPurityTracks_;
       int nVzBins;
+      int nHITracks;
 
       edm::InputTag vertexSrc_;
       edm::InputTag trackSrc_;
@@ -193,6 +194,8 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        vyErr=vsorted.begin()->yError();
      }
     
+    tAllTracks_->Fill(nHITracks);
+    
     for( const auto & track : *tracks ) //de-referencing the pointer "tracks" to track and auto will automatically know the type of tracks. This is a new way of looping over the tracks. It is guaranteed to run over all the tracks.
     {
         double dxy=0.0, dz=0.0, dxysigma=0.0, dzsigma=0.0;
@@ -207,13 +210,11 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
         char histoName1[200];
         char histoName2[200];
-        
         for(int kVz=0; kVz<nVzBins; kVz++) {
             if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
             {
                 sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
                 hdNdEtaVzBin_[histoName1]->Fill(track.eta());
-                
                 sprintf(histoName2, "nEventsVzBin_%d", kVz);
                 hEventVzBin_[histoName2]->Fill(0.5);
             }
@@ -225,13 +226,13 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             trkPerf_["Nhit"]->Fill(track.numberOfValidHits());
             trkPerf_["pt"]->Fill(track.pt());
             trkPerf_["eta"]->Fill( track.eta() );
-            trkPerf2D_["etaphi"]->Fill( track.eta(), track.phi() );
             trkPerf_["ptHigh"]->Fill(track.pt());
             trkPerf_["phi"]->Fill(track.phi());
             trkPerf_["dxyErr"]->Fill(dxy/dxysigma);
             trkPerf_["dzErr"]->Fill(dz/dzsigma);
             trkPerf_["chi2"]->Fill(track.normalizedChi2());
             trkPerf_["pterr"]->Fill(track.ptError() / track.pt() );
+            trkPerf2D_["etaphi"]->Fill( track.eta(), track.phi() );
             trkPerf2D_["etavz"]->Fill( vtxPoint.z(), track.eta() );
             trkPerf3D_["Nhit3D"]->Fill(track.eta(), track.pt(), track.numberOfValidHits());
             trkPerf3D_["phi3D"]->Fill(track.eta(), track.pt(), track.phi());
@@ -244,10 +245,40 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
     }
     
-   // tAllTracks_->Fill(nHITracks);
-    
     if( !(tHighPurityTracks_ >= cutMultMin_ && tHighPurityTracks_ < cutMultMax_)) return;
-   // tHPTracks_->Fill(tHighPurityTracks_);
+    evtPerf_["NHPtrk"]->Fill(tHighPurityTracks_);
+    
+    for( const auto & track : *tracks)
+    {
+        if( !TrackQualityCuts(track, vsorted[0])) continue;
+        
+        TVector3 pvector;
+        pvector.SetPtEtaPhi(track.pt(),track.eta(),track.phi());
+        
+        if(track.eta()<=etaMax_ass_ && track.eta()>=etaMin_ass_
+           && track.pt()<=ptMax_ass_ && track.pt()>=ptMin_ass_)
+        {
+            pVect_ass.push_back(pvector);
+            trkPerf_["ptAsso"]->Fill(track.pt());
+            trkPerf_["etaAsso"]->Fill(track.eta());
+            trkPerf_["phiAsso"]->Fill(track.phi());
+        }
+        
+      
+        TVector3 pvector1;
+        pvector1.SetPtEtaPhi(track.pt(),track.eta(),track.phi());
+            
+        if(track.eta()<=etaMax_trg_ && track.eta()>=etaMin_trg_
+            && track.pt()<=ptMax_trg_ && track.pt()>=ptMin_trg_)
+        {
+            pVect_trg.push_back(pvector);
+            trkPerf_["ptTrg"]->Fill(track.pt());
+            trkPerf_["etaTrg"]->Fill(track.eta());
+            trkPerf_["phiTrg"]->Fill(track.phi());
+        }
+    }
+    
+
 
 }
 
@@ -297,10 +328,8 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
 					 ptBins_.size()-1, &ptBins_[0],
 					 dumBins.size()-1, &dumBins[0]);
   evtPerf_["Ntrk"] = fs->make<TH1F>("evtNtrk","Tracks per event",100,0,400);
+  evtPerf_["NHPtrk"] = fs->make<TH1F>("evtHPNtrk","High purity tracks per event",100,0,400);
   evtPerf_["Nvtx"] = fs->make<TH1F>("evtNvtx","Primary Vertices per event",10,0,10);
-  evtPerf_["ncoll"] = fs->make<TH1F>("ncoll","Event Ncoll from Generator",50,0,50);
-  evtPerf_["b"] = fs->make<TH1F>("b","Impact Parameter from Generator",100,0,20);
-
   evtPerf_["NvtxLumi"] = fs->make<TH1F>("evtNvtxLumi","Primary Vertices by Lumi",200,0,2000);
   evtPerf_["Lumi"] = fs->make<TH1F>("evtLumi","Events by Lumi",200,0,2000);
 
@@ -349,6 +378,13 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
       sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
       hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);
     }
+    
+   trkPerf_["ptAsso"] = fs->make<TH1F>("trkPtAsso", "Associated Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
+   trkPerf_["ptTrg"] = fs->make<TH1F>("trkPtTrg", "Trigger Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
+   trkPerf_["etaAsso"] = fs->make<TH1F>("trkEtaAsso", "Associated Track pseudorapidity Distribution;#eta",51,-2.5,2.5);
+   trkPerf_["etaTrg"] = fs->make<TH1F>("trkEtaTrg", "Trigger Track pseudorapidity Distribution;#eta",51,-2.5,2.5);
+   trkPerf_["phiAsso"] = fs->make<TH1F>("trkPhiAsso", "Associated Track Azimuthal Distribution;#phi",100,-3.15,3.15);
+   trkPerf_["phiTrg"] = fs->make<TH1F>("trkPhiTrg", "Trigger Track Azimuthal Distribution;#phi",100,-3.15,3.15);
 }
 
 bool
