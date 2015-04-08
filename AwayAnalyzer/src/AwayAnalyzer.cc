@@ -64,6 +64,8 @@ class AwayAnalyzer : public edm::EDAnalyzer {
 
       TH1F* events_;
       TH1F* vertices_;
+      TH2D* hSignal;
+      TH2D* hBackground;
 
       int nevt_;
       int ntrack_;
@@ -233,7 +235,7 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         char histoName1[200];
         char histoName2[200];
         for(int kVz=0; kVz<nVzBins; kVz++) {
-            if(vsorted.z() > vzBins_[kVz] && vsorted.z() <= vzBins_[kVz+1])
+            if(vsorted[0].z() > vzBins_[kVz] && vsorted[0].z() <= vzBins_[kVz+1])
             {
                 sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
                 hdNdEtaVzBin_[histoName1]->Fill(track.eta());
