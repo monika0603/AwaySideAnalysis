@@ -233,7 +233,7 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         char histoName1[200];
         char histoName2[200];
         for(int kVz=0; kVz<nVzBins; kVz++) {
-            if(vtxPoint.z() > vzBins_[kVz] && vtxPoint.z() <= vzBins_[kVz+1])
+            if(vsorted.z() > vzBins_[kVz] && vsorted.z() <= vzBins_[kVz+1])
             {
                 sprintf(histoName1, "hdNdEta_VzBin_%d", kVz);
                 hdNdEtaVzBin_[histoName1]->Fill(track.eta());
@@ -300,14 +300,12 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         TVector3 pvector_trg = (pVect_trg)[ntrg];
         double eta_trg = pvector_trg.Eta();
         double phi_trg = pvector_trg.Phi();
-        double pt_trg = pvector_trg.Pt();
         
         for(int nass=0; nass<nMultAsso; nass++)
         {
             TVector3 pvector_ass = (pVect_ass)[nass];
             double eta_ass = pvector_ass.Eta();
             double phi_ass = pvector_ass.Phi();
-            double pt_ass = pvector_ass.Pt();
             
             double deltaEta = eta_ass - eta_trg;
             double deltaPhi = phi_ass - phi_trg;
@@ -324,7 +322,7 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     pVectVect_trg.push_back(pVect_trg);
     pVectVect_ass.push_back(pVect_ass);
-    zvtxVect.push_back(zVertexEventSelected);
+ //   zvtxVect.push_back(zVertexEventSelected);
 
 }
 
@@ -382,6 +380,8 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
       sprintf(histoTitle2, "No of events for %5.2f < V_{z} < %5.2f ", vzBins_[kVz], vzBins_[kVz+1]);
       hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);
     }
+    
+   hSignal = fs->make<TH2D>("hSignal", ";#Delta#eta;#Delta#phi", 33,-5.0-0.15,5.0+0.15,31,-_pi/2+_pi/32,3*_pi/2-_pi/32);
     
    trkPerf_["ptAsso"] = fs->make<TH1F>("trkPtAsso", "Associated Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
    trkPerf_["ptTrg"] = fs->make<TH1F>("trkPtTrg", "Trigger Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
