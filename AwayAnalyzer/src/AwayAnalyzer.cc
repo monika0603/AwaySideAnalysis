@@ -68,6 +68,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       int nevt_;
       int ntrack_;
       int nvertex_;
+      double pi_;
       int tHighPurityTracks_;
       int nVzBins;
       int nHITracks;
@@ -99,13 +100,14 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       double ptMaxTrg_;
       double ptMinAsso_;
       double ptMaxAsso_;
-
+    
 };
 
 AwayAnalyzer::AwayAnalyzer(const edm::ParameterSet& iConfig):
 nevt_(0),
 ntrack_(0),
 nvertex_(0),
+pi_(3.1415927),
 vertexSrc_(iConfig.getParameter<edm::InputTag>("vertexSrc")),
 trackSrc_(iConfig.getParameter<edm::InputTag>("trackSrc")),
 etaMin_(iConfig.getParameter<double>("etaMin")),
@@ -286,7 +288,52 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
     }
     
-
+    /////// Calculating the signal for di-hadron correlations ////////////////
+    int nMultTrg = (int)pVect_trg.size();
+    int nMultAsso = (int)pVect_ass.size();
+    
+    for(int ntrg=0; ntrg<nMultTrg; ++ntrg)
+    {
+        TVector3 pvector_trg = (pVect_trg)[ntrg];
+        double eta_trg = pvector_trg.Eta();
+        double phi_trg = pvector_trg.Phi();
+        double pt_trg = pvector_trg.Pt();
+        
+        for(int nass=0; nass<nMultAsso; nass++)
+        {
+            TVector3 pvector_ass = (pVect_ass)[nass];
+            double eta_ass = pvector_ass.Eta();
+            double phi_ass = pvector_ass.Phi();
+            double pt_ass = pvector_ass.Pt();
+            
+            double deltaEta = eta_ass - eta_trg;
+            double deltaPhi = phi_ass - phi_trg;
+            if(deltaPhi > pi_) deltaPhi = deltaPhi - 2*pi_;
+            if(deltaPhi < -pi_) deltaPhi = deltaPhi + 2*pi_;
+            if(deltaPhi > -pi_ && deltaPhi < -pi_/2.0) deltaPhi = deltaPhi + 2*pi_;
+            
+            if(deltaEta == 0 && deltaPhi == 0) continue;
+            
+            char histogramName5[200];
+            for(int kPt=0; kPt<bins1; kPt++) {
+                if(pt_trg > NptBins_[kPt] && pt_trg <= NptBins_[kPt+1]) //correction
+                 {
+                    sprintf(histogramName5, "hSignalPtBin%d", kPt);
+                
+                    hSignal[histogramName5]->Fill(fabs(deltaEta),fabs(deltaPhi));
+                    hSignal[histogramName5]->Fill(-fabs(deltaEta),fabs(deltaPhi));
+                    hSignal[histogramName5]->Fill(fabs(deltaEta),-fabs(deltaPhi));
+                    hSignal[histogramName5]->Fill(-fabs(deltaEta),-fabs(deltaPhi));
+                    hSignal[histogramName5]->Fill(fabs(deltaEta),2*pi_-fabs(deltaPhi));
+                    hSignal[histogramName5]->Fill(-fabs(deltaEta),2*pi_-fabs(deltaPhi));
+                }
+            }
+        } //Loop over associated particles
+    } //Loop over trigger particles
+    
+    pVectVect_trg.push_back(pVect_trg);
+    pVectVect_ass.push_back(pVect_ass);
+    zvtxVect.push_back(zVertexEventSelected);
 
 }
 
