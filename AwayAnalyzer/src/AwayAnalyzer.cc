@@ -383,7 +383,7 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
       hEventVzBin_[histoName2] = fs->make<TH1F>(histoName2, histoTitle2, 1, 0, 1);
     }
     
-   hSignal = fs->make<TH2D>("hSignal", ";#Delta#eta;#Delta#phi", 33,-5.0-0.15,5.0+0.15,31,-_pi/2+_pi/32,3*_pi/2-_pi/32);
+   hSignal = fs->make<TH2D>("hSignal", ";#Delta#eta;#Delta#phi", 33,-5.0-0.15,5.0+0.15,31,-pi_/2+pi_/32,3*pi_/2-pi_/32);
     
    trkPerf_["ptAsso"] = fs->make<TH1F>("trkPtAsso", "Associated Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
    trkPerf_["ptTrg"] = fs->make<TH1F>("trkPtTrg", "Trigger Track p_{T} Distribution;p_{T} [GeV/c]",100,0,10);
