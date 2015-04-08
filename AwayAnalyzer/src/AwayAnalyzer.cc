@@ -530,7 +530,7 @@ AwayAnalyzer::endJob()
                     double deltaPhi = phi_ass - phi_trg;
                     if(deltaPhi > pi_) deltaPhi = deltaPhi - 2*pi_;
                     if(deltaPhi < -pi_) deltaPhi = deltaPhi + 2*pi_;
-                    if(deltaPhi > -pi_ && deltaPhi < -_pi/2.0) deltaPhi = deltaPhi + 2*pi_;
+                    if(deltaPhi > -pi_ && deltaPhi < -pi_/2.0) deltaPhi = deltaPhi + 2*pi_;
                     
                     hBackground->Fill(deltaEta,deltaPhi,1.0/nMult_trg1);
                 }
