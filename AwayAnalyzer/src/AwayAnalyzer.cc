@@ -53,8 +53,6 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       // ----------member data ---------------------------
       std::map<std::string,TH1F*> evtPerf_;
       std::map<std::string,TH1F*> trkPerf_;
-      std::map<std::string,TH2F*> trkPerf2D_;
-      std::map<std::string,TH3F*> trkPerf3D_;
       std::map<std::string,TH1F*> vtxPerf_;
       std::map<std::string,TH2F*> vtxPerf2D_;
       std::map<std::string,TH1F*> hdNdEtaVzBin_;
@@ -62,8 +60,6 @@ class AwayAnalyzer : public edm::EDAnalyzer {
 
       TH1F* events_;
       TH1F* vertices_;
-      TH1F* tracks_;
-      TH1F* trackseta_;
 
       int nevt_;
       int ntrack_;
@@ -80,8 +76,7 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       double vertexZMax_;
 
       std::string qualityString_;
-
-      std::vector<double> ptBins_;
+    
       std::vector<double> etaBins_;
       std::vector<double> vzBins_;
       std::vector<double> NptBins_;
@@ -91,6 +86,15 @@ class AwayAnalyzer : public edm::EDAnalyzer {
       double cutPtErrMax_;
       double cutMultMin_;
       double cutMultMax_;
+    
+      double etaMinTrg_;
+      double etaMaxTrg_;
+      double etaMinAsso_;
+      double etaMaxAsso_;
+      double ptMinTrg_;
+      double ptMaxTrg_;
+      double ptMinAsso_;
+      double ptMaxAsso_;
 
 };
 
@@ -105,7 +109,6 @@ etaMax_(iConfig.getParameter<double>("etaMax")),
 ptMin_(iConfig.getParameter<double>("ptMin")),
 vertexZMax_(iConfig.getParameter<double>("vertexZMax")),
 qualityString_(iConfig.getParameter<std::string>("qualityString")),
-ptBins_(iConfig.getParameter<std::vector<double> >("ptBins")),
 etaBins_(iConfig.getParameter<std::vector<double> >("etaBins")),
 vzBins_(iConfig.getParameter<std::vector<double> >("vzBins"))
 {
@@ -120,6 +123,15 @@ vzBins_(iConfig.getParameter<std::vector<double> >("vzBins"))
     cutDzErrMax_ = iConfig.getUntrackedParameter<double>("cutDzErrMax", 3.0);
     cutDxyErrMax_ = iConfig.getUntrackedParameter<double>("cutDxyErrMax", 3.0);
     cutPtErrMax_ = iConfig.getUntrackedParameter<double>("cutPtErrMax", 0.1);
+    
+    etaMinTrg_ = iConfig.getParameter<double>("etaMinTrg");
+    etaMaxTrg_ = iConfig.getParameter<double>("etaMaxTrg");
+    etaMinAsso_ = iConfig.getParameter<double>("etaMinAsso");
+    etaMaxAsso_ = iConfig.getParameter<double>("etaMaxAsso");
+    ptMinTrg_ = iConfig.getParameter<double>("ptMinTrg");
+    ptMaxTrg_ = iConfig.getParameter<double>("ptMaxTrg");
+    ptMinAsso_ = iConfig.getParameter<double>("ptMinAsso");
+    ptMaxAsso_ = iConfig.getParameter<double>("ptMaxAsso");
     
 }
 
@@ -222,7 +234,6 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         
         if( track.eta() <= etaMax_ && track.eta() >= etaMin_ && track.pt() > ptMin_)
         {
-            trackseta_->Fill(0.5);
             trkPerf_["Nhit"]->Fill(track.numberOfValidHits());
             trkPerf_["pt"]->Fill(track.pt());
             trkPerf_["eta"]->Fill( track.eta() );
@@ -232,14 +243,6 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             trkPerf_["dzErr"]->Fill(dz/dzsigma);
             trkPerf_["chi2"]->Fill(track.normalizedChi2());
             trkPerf_["pterr"]->Fill(track.ptError() / track.pt() );
-            trkPerf2D_["etaphi"]->Fill( track.eta(), track.phi() );
-            trkPerf2D_["etavz"]->Fill( vtxPoint.z(), track.eta() );
-            trkPerf3D_["Nhit3D"]->Fill(track.eta(), track.pt(), track.numberOfValidHits());
-            trkPerf3D_["phi3D"]->Fill(track.eta(), track.pt(), track.phi());
-            trkPerf3D_["dxyErr3D"]->Fill(track.eta(), track.pt(), dxy/dxysigma);
-            trkPerf3D_["dzErr3D"]->Fill(track.eta(), track.pt(), dz/dzsigma);
-            trkPerf3D_["chi23D"]->Fill(track.eta(), track.pt(), track.normalizedChi2());
-            trkPerf3D_["pterr3D"]->Fill(track.eta(), track.pt(), track.ptError() / track.pt() );
             ntrack_++;
         }
         
@@ -255,8 +258,8 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         TVector3 pvector;
         pvector.SetPtEtaPhi(track.pt(),track.eta(),track.phi());
         
-        if(track.eta()<=etaMax_ass_ && track.eta()>=etaMin_ass_
-           && track.pt()<=ptMax_ass_ && track.pt()>=ptMin_ass_)
+        if(track.eta()<=etaMaxAsso_ && track.eta()>=etaMinAss0_
+           && track.pt()<ptMaxAsso_ && track.pt()>ptMinAsso_)
         {
             pVect_ass.push_back(pvector);
             trkPerf_["ptAsso"]->Fill(track.pt());
@@ -268,8 +271,8 @@ AwayAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         TVector3 pvector1;
         pvector1.SetPtEtaPhi(track.pt(),track.eta(),track.phi());
             
-        if(track.eta()<=etaMax_trg_ && track.eta()>=etaMin_trg_
-            && track.pt()<=ptMax_trg_ && track.pt()>=ptMin_trg_)
+        if(track.eta()<=etaMaxTrg_ && track.eta()>=etaMinTrg_
+            && track.pt()<=ptMaxTrg_ && track.pt()>=ptMinTrg_)
         {
             pVect_trg.push_back(pvector);
             trkPerf_["ptTrg"]->Fill(track.pt());
@@ -287,46 +290,8 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
 {
 
   events_ = fs->make<TH1F>("events","",1,0,1);
-  tracks_ = fs->make<TH1F>("tracks","",1,0,1);
-  trackseta_ = fs->make<TH1F>("trackseta","",1,0,1);
   vertices_ = fs->make<TH1F>("vertices","",1,0,1);
 
-
-  std::vector<double> dumBins;
-  dumBins.clear();
-  for( double i = 0.; i<36.; i += 1.) dumBins.push_back(i);
-  trkPerf3D_["Nhit3D"] = fs->make<TH3F>("trkNhit3D", "Tracks by Number of Valid Hits;N hits",
-					etaBins_.size()-1, &etaBins_[0],
-					ptBins_.size()-1, &ptBins_[0],
-					dumBins.size()-1, &dumBins[0]);
-  dumBins.clear();
-  for( double i = -3.15; i<3.151; i += 6.30/100.) dumBins.push_back(i);
-  trkPerf3D_["phi3D"] = fs->make<TH3F>("trkPhi3D", "Track Azimuthal Distribution;#phi",
-				       etaBins_.size()-1, &etaBins_[0],
-				       ptBins_.size()-1, &ptBins_[0],
-				       dumBins.size()-1, &dumBins[0]);
-  dumBins.clear();
-  for( double i = 0.; i<6.01; i += 6./60.) dumBins.push_back(i);
-  trkPerf3D_["chi23D"] = fs->make<TH3F>("trkChi23D", "Track Normalized #chi^{2};#chi^{2}/n.d.o.f",
-					etaBins_.size()-1, &etaBins_[0],
-					ptBins_.size()-1, &ptBins_[0],
-					dumBins.size()-1, &dumBins[0]);
-  dumBins.clear();
-  for( double i = 0.0; i<0.201; i += 0.2/50.) dumBins.push_back(i);
-  trkPerf3D_["pterr3D"] = fs->make<TH3F>("trkPterr3D", "Track p_{T} error;#delta p_{T} / p_{T}",
-					 etaBins_.size()-1, &etaBins_[0],
-					 ptBins_.size()-1, &ptBins_[0],
-					 dumBins.size()-1, &dumBins[0]);
-  dumBins.clear();
-  for( double i = -8.; i<8.01; i += 16./100.) dumBins.push_back(i);
-  trkPerf3D_["dxyErr3D"] = fs->make<TH3F>("trkDxyErr3D", "Transverse DCA Significance;dxy / #sigma_{dxy}",
-					  etaBins_.size()-1, &etaBins_[0],
-					  ptBins_.size()-1, &ptBins_[0],
-					  dumBins.size()-1, &dumBins[0]);
-  trkPerf3D_["dzErr3D"] = fs->make<TH3F>("trkDzErr3D", "Longitudinal DCA Significance;dz / #sigma_{dz}",
-					 etaBins_.size()-1, &etaBins_[0],
-					 ptBins_.size()-1, &ptBins_[0],
-					 dumBins.size()-1, &dumBins[0]);
   evtPerf_["Ntrk"] = fs->make<TH1F>("evtNtrk","Tracks per event",100,0,400);
   evtPerf_["NHPtrk"] = fs->make<TH1F>("evtHPNtrk","High purity tracks per event",100,0,400);
   evtPerf_["Nvtx"] = fs->make<TH1F>("evtNvtx","Primary Vertices per event",10,0,10);
@@ -359,10 +324,6 @@ AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
   trkPerf_["dxyErr"] = fs->make<TH1F>("trkDxyErr", "Transverse DCA Significance;dxy / #sigma_{dxy}",100,-8,8);
   trkPerf_["dzErr"] = fs->make<TH1F>("trkDzErr", "Longitudinal DCA Significance;dz / #sigma_{dz}",100,-8,8);
 
-  trkPerf2D_["etaphi"] = fs->make<TH2F>("trkEtaPhi","Track Eta-Phi Map;#eta;#phi",50,-2.5,2.5,100,-3.15,3.15);
-  trkPerf2D_["etavz"] = fs->make<TH2F>("trkEtaVz","Track Eta vs Vertex z;Vertex z (cm);#eta",
-                                       100,-30,30,100,-3.0,3.0);
-  
   char histoName1[300];
   char histoTitle1[1000];
   char histoName2[200];
