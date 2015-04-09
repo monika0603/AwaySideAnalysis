@@ -13,7 +13,7 @@ config.JobType.psetName = 'awaySideAnalyzer_PAHighPt_cfg.py'
 config.JobType.outputFiles = ['pPb_Pbp_CombinedDiHadronCorrFunc_eta0_1_2.root']
 
 config.section_('Data')
-config.Data.inputDataset = '/PAMinBiasUPC/HIRun2013-PromptReco-v1/RECO'
+config.Data.inputDataset = ' /PAHighPt/HIRun2013-PromptReco-v1/RECO'
 config.Data.inputDBS = 'global'
 config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 20
