@@ -16,10 +16,10 @@ process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 
 process.wantSummary = cms.untracked.bool(True)
 process.makeTriggerResults = cms.untracked.bool(True)
-process.options = cms.untracked.PSet(
-                                     makeTriggerResults = cms.untracked.bool(True),
-                                     wantSummary = cms.untracked.bool(True)
-                                    )
+    #process.options = cms.untracked.PSet(
+    #                                makeTriggerResults = cms.untracked.bool(True),
+    #                                wantSummary = cms.untracked.bool(True)
+#                               )
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
