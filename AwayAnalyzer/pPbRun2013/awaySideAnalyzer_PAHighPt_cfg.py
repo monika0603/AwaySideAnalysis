@@ -52,7 +52,7 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("pPb_Pbp_CombinedDiHadronCorrFunc.root")
                                    )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.GlobalTag.globaltag = 'GR_P_V42_AN3::All'
 
 from HeavyIonsAnalysis.Configuration.CommonFunctions_cff import *
@@ -157,7 +157,7 @@ process.schedule = cms.Schedule(process.Mult100,process.Mult130,process.Mult160,
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                                              '/store/hidata/HIRun2013/PAMinBiasUPC/RECO/PromptReco-v1/000/209/948/00000/184CCE65-8C60-E211-B2D4-003048D2BE12.root'
+                                                              '/store/hidata/HIRun2013/PAHighPt/RECO/PromptReco-v1/000/211/631/00000/FEDE0B60-3F75-E211-8FE3-003048D2BC5C.root'
                                                               )
                             )
 
