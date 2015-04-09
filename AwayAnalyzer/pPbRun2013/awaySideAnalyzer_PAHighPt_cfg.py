@@ -14,6 +14,13 @@ process.load('CondCore.DBCommon.CondDBCommon_cfi');
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 
+process.wantSummary = cms.untracked.bool(True)
+process.makeTriggerResults = cms.untracked.bool(True)
+process.options = cms.untracked.PSet(
+                                     makeTriggerResults = cms.untracked.bool(True),
+                                     wantSummary = cms.untracked.bool(True)
+                                    )
+
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 process.AwaySideAnalysis = cms.EDAnalyzer('AwayAnalyzer',
@@ -148,9 +155,11 @@ process.Mult190 = cms.Path(process.hltSingleTrigger *
                            process.AwaySideAnalysisMult190
                            )
 
+process.schedule = cms.Schedule(process.Mult100,process.Mult130,process.Mult160,process.Mult190)
+
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                        '/store/hidata/HIRun2013/PAHighPt/RECO/FlowCorrPA-PromptSkim-v2/00005/F0A4F448-A477-E211-A550-003048F316C8.root'
+                                                              '/store/hidata/HIRun2013/PAHighPt/RECO/PromptReco-v1/000/211/631/00000/FEDE0B60-3F75-E211-8FE3-003048D2BC5C.root'
                                                               )
                             )
 
