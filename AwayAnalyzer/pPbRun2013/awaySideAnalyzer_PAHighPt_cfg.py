@@ -14,7 +14,6 @@ process.load('CondCore.DBCommon.CondDBCommon_cfi');
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 
-                             )
 process.options = cms.untracked.PSet(
                                      makeTriggerResults = cms.untracked.bool(True),
                                      wantSummary = cms.untracked.bool(True)
