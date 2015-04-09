@@ -157,7 +157,7 @@ process.schedule = cms.Schedule(process.Mult100,process.Mult130,process.Mult160,
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                                              '/store/hidata/HIRun2013/PAMinBiasUPC/RECO/PromptReco-v1/000/209/846/00000/800F8DAF-095F-E211-829B-001D09F24763.root'
+                                                              '/store/hidata/HIRun2013/PAMinBiasUPC/RECO/PromptReco-v1/000/209/948/00000/184CCE65-8C60-E211-B2D4-003048D2BE12.root'
                                                               )
                             )
 
