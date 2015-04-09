@@ -14,12 +14,7 @@ process.load('CondCore.DBCommon.CondDBCommon_cfi');
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 
-#process.wantSummary = cms.bool(True)
-#process.makeTriggerResults = cms.bool(True)
-    #process.options = cms.untracked.PSet(
-    #                                makeTriggerResults = cms.untracked.bool(True),
-    #                                wantSummary = cms.untracked.bool(True)
-#                               )
+                             )
 process.options = cms.untracked.PSet(
                                      makeTriggerResults = cms.untracked.bool(True),
                                      wantSummary = cms.untracked.bool(True)
@@ -163,7 +158,7 @@ process.schedule = cms.Schedule(process.Mult100,process.Mult130,process.Mult160,
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                                              '/store/hidata/HIRun2013/PAHighPt/RECO/PromptReco-v1/000/211/631/00000/FEDE0B60-3F75-E211-8FE3-003048D2BC5C.root'
+                                                              '/store/hidata/HIRun2013/PAMinBiasUPC/RECO/PromptReco-v1/000/209/846/00000/800F8DAF-095F-E211-829B-001D09F24763.root'
                                                               )
                             )
 
