@@ -121,7 +121,7 @@ process.AwaySideAnalysisMult190 = process.AwaySideAnalysis.clone(
                                                        cutMultMax = cms.double(260)
                                                        )
 
-process.Mult100 = cms.Path(process.hltSingleTrigger *
+process.Mult100 = cms.Path(process.hltMult100 *
                            process.PAcollisionEventSelection *
                            process.siPixelRecHits *
                            #     process.pileupVertexFilterCutGplus *
@@ -129,7 +129,7 @@ process.Mult100 = cms.Path(process.hltSingleTrigger *
                            process.AwaySideAnalysisMult100
                            )
 
-process.Mult130 = cms.Path(process.hltSingleTrigger *
+process.Mult130 = cms.Path(process.hltMult130 *
                            process.PAcollisionEventSelection *
                            process.siPixelRecHits *
                            #     process.pileupVertexFilterCutGplus *
@@ -137,7 +137,7 @@ process.Mult130 = cms.Path(process.hltSingleTrigger *
                            process.AwaySideAnalysisMult130
                            )
 
-process.Mult160 = cms.Path(process.hltSingleTrigger *
+process.Mult160 = cms.Path(process.hltMult160 *
                            process.PAcollisionEventSelection *
                            process.siPixelRecHits *
                            #     process.pileupVertexFilterCutGplus *
@@ -145,7 +145,7 @@ process.Mult160 = cms.Path(process.hltSingleTrigger *
                            process.AwaySideAnalysisMult160
                            )
 
-process.Mult190 = cms.Path(process.hltSingleTrigger *
+process.Mult190 = cms.Path(process.hltMult190 *
                            process.PAcollisionEventSelection *
                            process.siPixelRecHits *
                            #      process.pileupVertexFilterCutGplus *
@@ -157,7 +157,7 @@ process.schedule = cms.Schedule(process.Mult100,process.Mult130,process.Mult160,
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                                              '/store/hidata/HIRun2013/PAHighPt/RECO/FlowCorrPA-PromptSkim-v2/00000/0011868F-1A6C-E211-9B40-842B2B6AEB43.root'
+                                                              '/store/hidata/HIRun2013/PAHighPt/RECO/PromptReco-v1/000/211/631/00000/FEDE0B60-3F75-E211-8FE3-003048D2BC5C.root'
                                                               )
                             )
 
