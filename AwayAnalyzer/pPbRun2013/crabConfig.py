@@ -2,7 +2,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 config.section_('General')
-config.General.requestName = 'AwayAnalysisFirstAttempt'
+config.General.requestName = 'AwayAnalysisEtaAsso_1_2_0'
 config.General.workArea = 'pPbRun2013'
 config.General.transferOutputs = True
 config.General.transferLogs = True
