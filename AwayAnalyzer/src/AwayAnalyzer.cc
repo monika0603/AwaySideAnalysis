@@ -332,6 +332,7 @@ void
 AwayAnalyzer::initHistos(const edm::Service<TFileService> & fs)
 {
 
+  TH1D::SetDefaultSumw2();
   events_ = fs->make<TH1F>("events","",1,0,1);
   vertices_ = fs->make<TH1F>("vertices","",1,0,1);
 
@@ -539,6 +540,7 @@ AwayAnalyzer::endJob()
     }
     
     delete [] acceptedTriggerEvents;
+    
 }
 
 //define this as a plug-in
