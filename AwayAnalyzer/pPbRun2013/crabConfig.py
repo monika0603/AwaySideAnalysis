@@ -10,7 +10,7 @@ config.General.transferLogs = True
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'awaySideAnalyzer_PAHighPt_cfg.py'
-config.JobType.outputFiles = ['pPb_Pbp_CombinedDiHadronCorrFunc_NoCutetaTrg_EtaAsso_1_2_0_Pt3_10.root']
+config.JobType.outputFiles = ['pPb_Pbp_CombinedDiHadronCorrFunc_NoCutetaTrg_EtaAsso_0_1_2_Pt3_10.root']
 
 config.section_('Data')
 config.Data.inputDataset = '/PAHighPt/HIRun2013-PromptReco-v1/RECO'

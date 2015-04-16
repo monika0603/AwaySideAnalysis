@@ -40,8 +40,8 @@ process.AwaySideAnalysis = cms.EDAnalyzer('AwayAnalyzer',
                               cutPtErrMax = cms.untracked.double(0.1),
                               etaMinTrg = cms.double(-2.4),
                               etaMaxTrg = cms.double(2.4),
-                              etaMinAsso = cms.double(-1.2),
-                              etaMaxAsso = cms.double(0.0),
+                              etaMinAsso = cms.double(0),
+                              etaMaxAsso = cms.double(1.2),
                               ptMinTrg = cms.double(3.0),
                               ptMaxTrg = cms.double(10.0),
                               ptMinAsso = cms.double(3.0),
@@ -49,7 +49,7 @@ process.AwaySideAnalysis = cms.EDAnalyzer('AwayAnalyzer',
                               )
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("pPb_Pbp_CombinedDiHadronCorrFunc_NoCutetaTrg_EtaAsso_1_2_0_Pt3_10.root")
+                                   fileName = cms.string("pPb_Pbp_CombinedDiHadronCorrFunc_NoCutetaTrg_EtaAsso_0_1_2_Pt3_10.root")
                                    )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
